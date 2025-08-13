@@ -8,6 +8,10 @@ if exists("g:loaded_obsession") || v:version < 704 || &cp
 endif
 let g:loaded_obsession = 1
 
+if !exists("g:obsession_default_filename")
+  let g:obsession_default_filename = 'Session.vim'
+endif
+
 command! -bar -bang -complete=file -nargs=? Obsession
       \ execute s:dispatch(<bang>0, <q-args>)
 
@@ -26,13 +30,14 @@ function! s:dispatch(bang, file) abort
     elseif empty(a:file) && !empty(session)
       let file = session
     elseif empty(a:file)
-      let file = getcwd() . '/Session.vim'
+      let file = getcwd() . '/' . g:obsession_default_filename
     elseif isdirectory(a:file)
       let file = substitute(fnamemodify(expand(a:file), ':p'), '[\/]$', '', '')
-            \ . '/Session.vim'
+            \ . '/' . g:obsession_default_filename
     else
       let file = fnamemodify(expand(a:file), ':p')
     endif
+    " No need to consider g:obsesssion_default_filename below; Session.vim is the default name for vim sessions
     if !a:bang
       \ && file !~# 'Session\.vim$'
       \ && filereadable(file)
